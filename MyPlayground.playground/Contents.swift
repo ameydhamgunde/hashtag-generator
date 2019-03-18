@@ -10,14 +10,19 @@
 import PlaygroundSupport
 import UIKit
 
-//  Setting up the view that will be used to interact with the application. The dimensions have been set to that of the iPad Pro.
-let view = UIView(frame: CGRect(x: 0, y: 0, width: 834, height:1112))
+//  Setting up the view that will be used to interact with the application. The dimensions have been set to half of the iPad Pro,
+//  since I am using a Macbook Air - the view would not fit within the screen dimensions. The app should be able to easily scale up.
+
+let view = UIView(frame: CGRect(x: 0, y: 0, width: 417, height:556))
+let standardSize = CGSize(width: (view.frame.width/417)*100, height: (view.frame.width/417)*100)
+
+let row1 = CGFloat(standardSize.width/2)
+let row2 = CGFloat(standardSize.width*2)
 view.backgroundColor = .white
 
-let standardSize = CGSize(width: 100, height: 100)
 
 //  Image 1
-let image1 = UIImageView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: standardSize))
+let image1 = UIImageView(frame: CGRect(origin: CGPoint(x: standardSize.width/2, y: row1), size: standardSize))
 
 if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
@@ -28,55 +33,61 @@ view.addSubview(image1)
 
 //  Image 2
 
-let image2 = UIImageView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: standardSize))
+let image2 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-standardSize.width/2, y: row1), size: standardSize))
 
 if let sample = Bundle.main.path(forResource: "img2", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
     image2.image = image
 }
 
+view.addSubview(image2)
+
 //  Image 3
 
-let image3 = UIImageView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: standardSize))
+let image3 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-standardSize.width, y: row1), size: standardSize))
 
-if let sample = Bundle.main.path(forResource: "img3", ofType: "jpg") {
+if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
-    image2.image = image
+    image3.image = image
 }
 
+view.addSubview(image3)
 
 //  Image 4
 
-let image4 = UIImageView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: standardSize))
+let image4 = UIImageView(frame: CGRect(origin: CGPoint(x: standardSize.width/2, y: row2), size: standardSize))
 
-if let sample = Bundle.main.path(forResource: "img4", ofType: "jpg") {
+if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
-    image2.image = image
+    image4.image = image
 }
 
-
+view.addSubview(image4)
 
 //  Image 5
 
-let image5 = UIImageView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: standardSize))
+let image5 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-standardSize.width/2, y: row2), size: standardSize))
 
-if let sample = Bundle.main.path(forResource: "img5", ofType: "jpg") {
+if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
-    image2.image = image
+    image5.image = image
 }
 
-
+view.addSubview(image5)
 
 //  Image 6
 
-let image6 = UIImageView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: standardSize))
+let image6 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-standardSize.width, y: row2), size: standardSize))
 
-if let sample = Bundle.main.path(forResource: "img6", ofType: "jpg") {
+if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
     let image = UIImage(contentsOfFile: sample)
-    image2.image = image
+    image6.image = image
 }
 
+view.addSubview(image6)
+
 let model = GoogLeNetPlaces()
+
 
 
 //  Used to resize images that are too large for the GoogLeNetPlaces neural network to handle.
