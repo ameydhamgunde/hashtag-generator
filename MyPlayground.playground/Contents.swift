@@ -4,17 +4,17 @@
 //  Created by Amey Dhamgunde on 2019-03-17.
 //  Copyright © 2019 Amey Dhamgunde. All rights reserved.
 //
-//  Description:
+//  Description: For content creators, a large part of their job is gaining recognition on
 //
 
 import PlaygroundSupport
 import UIKit
 import CoreGraphics
 
-
 //  Used to resize images that are not the required size that GoogLeNetPlaces can handle. Knowing that the image size required is 224x224,
 //  this function is designed to extend the UIImage class and resize it to the specified dimensions.
-//  This inadvertently can
+//  This inadvertently can stretch the image, but this is a better alternative compared to
+
 extension UIImage {
     func resize() -> UIImage {
         let targetSize = CGSize.init(width: 224, height: 224)
@@ -29,6 +29,7 @@ extension UIImage {
         return newImage!
     }
 }
+
 
 class viewController : UIViewController {
     
@@ -53,7 +54,15 @@ class viewController : UIViewController {
     var label5 = UILabel()
     var label6 = UILabel()
     
+    var titleLabel = UILabel()
+    
+    var instruction1 = UILabel()
+    var instruction2 = UILabel()
+    var instruction3 = UILabel()
+    
     var labels : [UILabel] = []
+    var resultsLabel = UILabel()
+    var copiedLabel = UILabel()
     
     var numberOfHashtags : Int = 1
     
@@ -70,12 +79,19 @@ class viewController : UIViewController {
         margin = standardSize.width/2   //  This is used to keep all the margins the same, based off the standard size for the images. This is thus dependent on the size of the view, allowing the app to be easily scaled up.
         
         // By making the rows dependent on the screen size, it makes the app adaptable.
-        let row1 = CGFloat(standardSize.width*1.75)
+        let row1 = CGFloat(standardSize.width*1.85)
         let row2 = CGFloat(standardSize.width*3)
-        let row3 = CGFloat(standardSize.width*0.85) //  Row for the buttons
+        let row3 = CGFloat(standardSize.width*1.05) //  Row for the buttons
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.15, alpha: 1.0)
         
+        
+        titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/2, width: view.frame.width-margin, height: 40))
+        titleLabel.text = "Instagram Hashtag Generator"
+        titleLabel.font = UIFont(name: "SF Pro Display", size: 35)
+        titleLabel.textAlignment = .center
+        titleLabel.textColor = .white
+        view.addSubview(titleLabel)
         
         //  Image 1 and gestureRecognizers
         
@@ -91,6 +107,8 @@ class viewController : UIViewController {
         image1.layer.borderColor = UIColor.black.cgColor
         image1.layer.borderWidth = 2.5*(view.frame.width/417)
         image1.isUserInteractionEnabled = true
+        image1.contentMode = .scaleAspectFill
+        image1.clipsToBounds = true
         image1.addGestureRecognizer(imageGestureRecognizer1)
         
         
@@ -108,6 +126,8 @@ class viewController : UIViewController {
         image2.layer.borderColor = UIColor.black.cgColor
         image2.layer.borderWidth = 2.5*(view.frame.width/417)
         image2.isUserInteractionEnabled = true
+        image2.contentMode = .scaleAspectFill
+        image2.clipsToBounds = true
         image2.addGestureRecognizer(imageGestureRecognizer2)
         
         
@@ -125,6 +145,8 @@ class viewController : UIViewController {
         image3.layer.borderColor = UIColor.black.cgColor
         image3.layer.borderWidth = 2.5*(view.frame.width/417)
         image3.isUserInteractionEnabled = true
+        image3.contentMode = .scaleAspectFill
+        image3.clipsToBounds = true
         image3.addGestureRecognizer(imageGestureRecognizer3)
         
         
@@ -142,6 +164,8 @@ class viewController : UIViewController {
         image4.layer.borderColor = UIColor.black.cgColor
         image4.layer.borderWidth = 2.5*(view.frame.width/417)
         image4.isUserInteractionEnabled = true
+        image4.contentMode = .scaleAspectFill
+        image4.clipsToBounds = true
         image4.addGestureRecognizer(imageGestureRecognizer4)
         
         
@@ -159,6 +183,8 @@ class viewController : UIViewController {
         image5.layer.borderColor = UIColor.black.cgColor
         image5.layer.borderWidth = 2.5*(view.frame.width/417)
         image5.isUserInteractionEnabled = true
+        image5.contentMode = .scaleAspectFill
+        image5.clipsToBounds = true
         image5.addGestureRecognizer(imageGestureRecognizer5)
         
         
@@ -176,6 +202,8 @@ class viewController : UIViewController {
         image6.layer.borderColor = UIColor.black.cgColor
         image6.layer.borderWidth = 2.5*(view.frame.width/417)
         image6.isUserInteractionEnabled = true
+        image6.contentMode = .scaleAspectFill
+        image6.clipsToBounds = true
         image6.addGestureRecognizer(imageGestureRecognizer6)
         
         view.addSubview(image1)
@@ -196,6 +224,7 @@ class viewController : UIViewController {
         label1.text = "1"
         label1.textAlignment = .center
         label1.isUserInteractionEnabled = true
+        label1.textColor = .white
         label1.addGestureRecognizer(gestureRecognizer)
         
         label2 = UILabel(frame: CGRect(x: margin+buttonWidth, y: row3, width: buttonWidth, height: 20))
@@ -203,6 +232,7 @@ class viewController : UIViewController {
         label2.text = "2"
         label2.textAlignment = .center
         label2.isUserInteractionEnabled = true
+        label2.textColor = .white
         label2.addGestureRecognizer(gestureRecognizer2)
 
         
@@ -211,6 +241,7 @@ class viewController : UIViewController {
         label3.text = "3"
         label3.textAlignment = .center
         label3.isUserInteractionEnabled = true
+        label3.textColor = .white
         label3.addGestureRecognizer(gestureRecognizer3)
 
         label4 = UILabel(frame: CGRect(x: margin+3*buttonWidth, y: row3, width: buttonWidth, height: 20))
@@ -218,6 +249,7 @@ class viewController : UIViewController {
         label4.text = "4"
         label4.textAlignment = .center
         label4.isUserInteractionEnabled = true
+        label4.textColor = .white
         label4.addGestureRecognizer(gestureRecognizer4)
 
         label5 = UILabel(frame: CGRect(x: margin+4*buttonWidth, y: row3, width: buttonWidth, height: 20))
@@ -225,6 +257,7 @@ class viewController : UIViewController {
         label5.text = "5"
         label5.textAlignment = .center
         label5.isUserInteractionEnabled = true
+        label5.textColor = .white
         label5.addGestureRecognizer(gestureRecognizer5)
 
         label6 = UILabel(frame: CGRect(x: margin+5*buttonWidth, y: row3, width: buttonWidth, height: 20))
@@ -232,6 +265,7 @@ class viewController : UIViewController {
         label6.text = "6"
         label6.textAlignment = .center
         label6.isUserInteractionEnabled = true
+        label6.textColor = .white
         label6.addGestureRecognizer(gestureRecognizer6)
 
         labels = [label1, label2, label3, label4, label5, label6]
@@ -246,16 +280,68 @@ class viewController : UIViewController {
         view.addSubview(label5)
         view.addSubview(label6)
         
+        
+        //  Adding results
+        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 9.1*margin, width: view.frame.width-margin, height: 50))
+        let copyRecognizer = UITapGestureRecognizer(target: self, action: #selector(copyIt))
+        resultsLabel.font = UIFont(name: "Helvetica", size: 20)
+        resultsLabel.textAlignment = .center
+        resultsLabel.lineBreakMode = .byWordWrapping
+        resultsLabel.numberOfLines = 0
+        resultsLabel.isUserInteractionEnabled = true
+        resultsLabel.textColor = .white
+        resultsLabel.addGestureRecognizer(copyRecognizer)
+        
+        view.addSubview(resultsLabel)
+        
+        copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100, height: 20))
+        let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
+        copiedLabel.font = UIFont(name: "Helvetica", size: 14)
+        copiedLabel.textAlignment = .center
+        copiedLabel.isHidden = true
+        copiedLabel.text = "Tap to copy!"
+        copiedLabel.addGestureRecognizer(copyRecognizerLabel)
+        copiedLabel.isUserInteractionEnabled = true
+        copiedLabel.textColor = .white
+        view.addSubview(copiedLabel)
+        
+        
+        // Setting up the instructions
+        
+        instruction1 = UILabel(frame: CGRect(x: margin/2, y: margin*1.25, width: view.frame.width-margin, height: 30))
+        instruction1.text = "1. How many hashtags do you need?"
+        instruction1.font = UIFont(name: "San Francisco", size: 17)
+        instruction1.textColor = .white
+        view.addSubview(instruction1)
+        
+        instruction2 = UILabel(frame: CGRect(x: margin/2, y: margin*2.75, width: view.frame.width-margin, height: 30))
+        instruction2.text = "2. Which image do you need analyzed?"
+        instruction2.font = UIFont(name: "Montserrat", size: 17)
+        instruction2.textColor = .white
+        view.addSubview(instruction2)
+        
+        instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.5, width: view.frame.width-margin, height: 30))
+        instruction3.text = "3. Done! Copy your hashtags below."
+        instruction3.font = UIFont(name: "Open Sans", size: 17)
+        instruction3.textColor = .white
+        view.addSubview(instruction3)
+        
+    }
+    
+    @objc internal func copyIt(_ sender : UITapGestureRecognizer) {
+        let hashtags = sender.view as! UILabel
+        UIPasteboard.general.string = hashtags.text
+        copiedLabel.text = "Copied!"
     }
     
     func switching (label : UILabel) {
         for u in labels {
             if u == label {
-                u.textColor = .blue
+                u.textColor = .purple
                 numberOfHashtags = Int(u.text!)!
                 print(numberOfHashtags)
             } else {
-                u.textColor = .black
+                u.textColor = .white
             }
         }
     }
@@ -269,6 +355,8 @@ class viewController : UIViewController {
     
     @objc internal func callMLModel(_ sender : UITapGestureRecognizer) {
         
+        copiedLabel.isHidden = false
+        copiedLabel.text = "Tap to copy!"
         let imageView = sender.view as! UIImageView
         finalHashtags = ""
         allScenes = []
@@ -300,6 +388,7 @@ class viewController : UIViewController {
         }
         
         print(finalHashtags)
+        resultsLabel.text = finalHashtags
     }
     
     func hashtagCreator (stringToCreate : String) -> String {
@@ -307,7 +396,6 @@ class viewController : UIViewController {
     }
     
     func scenes (image : UIImage) -> Dictionary<String, Double>? {
-        print("running")
         let resizedImage = image.resize()
         
         if let bufferedImage = imageProcessor.pixelBuffer(forImage: resizedImage.cgImage!) {
