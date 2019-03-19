@@ -68,6 +68,7 @@ class viewController : UIViewController {
     var image4 = UIImageView()
     var image5 = UIImageView()
     var image6 = UIImageView()
+    var images : [UIImageView] = []
     
     var label1 = UILabel()
     var label2 = UILabel()
@@ -135,7 +136,7 @@ class viewController : UIViewController {
             image1.image = image
         }
         
-        image1.layer.borderColor = UIColor.black.cgColor
+        image1.layer.borderColor = UIColor.white.cgColor
         image1.layer.borderWidth = 2.5*(view.frame.width/417)
         image1.isUserInteractionEnabled = true
         image1.contentMode = .scaleAspectFill
@@ -154,7 +155,7 @@ class viewController : UIViewController {
             image2.image = image
         }
         
-        image2.layer.borderColor = UIColor.black.cgColor
+        image2.layer.borderColor = UIColor.white.cgColor
         image2.layer.borderWidth = 2.5*(view.frame.width/417)
         image2.isUserInteractionEnabled = true
         image2.contentMode = .scaleAspectFill
@@ -173,7 +174,7 @@ class viewController : UIViewController {
             image3.image = image
         }
         
-        image3.layer.borderColor = UIColor.black.cgColor
+        image3.layer.borderColor = UIColor.white.cgColor
         image3.layer.borderWidth = 2.5*(view.frame.width/417)
         image3.isUserInteractionEnabled = true
         image3.contentMode = .scaleAspectFill
@@ -192,7 +193,7 @@ class viewController : UIViewController {
             image4.image = image
         }
         
-        image4.layer.borderColor = UIColor.black.cgColor
+        image4.layer.borderColor = UIColor.white.cgColor
         image4.layer.borderWidth = 2.5*(view.frame.width/417)
         image4.isUserInteractionEnabled = true
         image4.contentMode = .scaleAspectFill
@@ -211,7 +212,7 @@ class viewController : UIViewController {
             image5.image = image
         }
         
-        image5.layer.borderColor = UIColor.black.cgColor
+        image5.layer.borderColor = UIColor.white.cgColor
         image5.layer.borderWidth = 2.5*(view.frame.width/417)
         image5.isUserInteractionEnabled = true
         image5.contentMode = .scaleAspectFill
@@ -230,7 +231,7 @@ class viewController : UIViewController {
             image6.image = image
         }
         
-        image6.layer.borderColor = UIColor.black.cgColor
+        image6.layer.borderColor = UIColor.white.cgColor
         image6.layer.borderWidth = 2.5*(view.frame.width/417)
         image6.isUserInteractionEnabled = true
         image6.contentMode = .scaleAspectFill
@@ -243,6 +244,7 @@ class viewController : UIViewController {
         view.addSubview(image4)
         view.addSubview(image5)
         view.addSubview(image6)
+        images = [image1, image2, image3, image4, image5, image6]
         
         
         //  Buttons for how many hashtags to generate.
@@ -370,7 +372,6 @@ class viewController : UIViewController {
             if u == label {
                 u.textColor = .purple
                 numberOfHashtags = Int(u.text!)!
-                print(numberOfHashtags)
             } else {
                 u.textColor = .white
             }
@@ -391,6 +392,14 @@ class viewController : UIViewController {
         let imageView = sender.view as! UIImageView
         finalHashtags = ""
         allScenes = []
+        
+        for u in images {
+            if u == imageView {
+                u.layer.borderColor = UIColor.purple.cgColor
+            } else {
+                u.layer.borderColor = UIColor.white.cgColor
+            }
+        }
         
         if let imageToAnalyse = imageView.image {
             if var sceneLabels = scenes(image : imageToAnalyse) {
@@ -418,7 +427,6 @@ class viewController : UIViewController {
             }
         }
         
-        print(finalHashtags)
         resultsLabel.text = finalHashtags
     }
     
