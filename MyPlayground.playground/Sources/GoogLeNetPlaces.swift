@@ -14,7 +14,7 @@ import CoreML
 public class GoogLeNetPlacesInput : MLFeatureProvider {
 
     /// Input image of scene to be classified as color (kCVPixelFormatType_32BGRA) image buffer, 224 pixels wide by 224 pixels high
-    var sceneImage: CVPixelBuffer
+    public var sceneImage: CVPixelBuffer
 
     public var featureNames: Set<String> {
         get {
@@ -44,12 +44,12 @@ public class GoogLeNetPlacesOutput : MLFeatureProvider {
 
 
     /// Probability of each scene as dictionary of strings to doubles
-    lazy var sceneLabelProbs: [String : Double] = {
+    public lazy var sceneLabelProbs: [String : Double] = {
         [unowned self] in return self.provider.featureValue(for: "sceneLabelProbs")!.dictionaryValue as! [String : Double]
     }()
 
     /// Most likely scene label as string value
-    lazy var sceneLabel: String = {
+    public lazy var sceneLabel: String = {
         [unowned self] in return self.provider.featureValue(for: "sceneLabel")!.stringValue
     }()
 
@@ -74,7 +74,7 @@ public class GoogLeNetPlacesOutput : MLFeatureProvider {
 /// Class for model loading and prediction
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 public class GoogLeNetPlaces {
-    var model: MLModel
+    public var model: MLModel
 
 /// URL of model assuming it was installed in the same bundle as this class
     public class var urlOfModelInThisBundle : URL {
