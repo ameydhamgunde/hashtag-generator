@@ -4,7 +4,7 @@
 //  Created by Amey Dhamgunde on 2019-03-17.
 //  Copyright © 2019 Amey Dhamgunde. All rights reserved.
 //  
-//  This method is used to convert from CGImage to CVPixelBuffer, which is an accepted argument by the GoogLeNetPlaces ML model.
+//  This method is used to convert from CGImage to CVPixelBuffer, the latter being an accepted argument by the GoogLeNetPlaces ML model.
 //
 
 import CoreVideo
