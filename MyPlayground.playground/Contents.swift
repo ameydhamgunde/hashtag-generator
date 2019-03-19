@@ -28,10 +28,32 @@ extension UIImage {
         
         return newImage!
     }
+    
+    func darkened() -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        defer { UIGraphicsEndImageContext() }
+        
+        guard let ctx = UIGraphicsGetCurrentContext(), let cgImage = cgImage else {
+            return nil
+        }
+        
+        // flip the image, or result appears flipped
+        ctx.scaleBy(x: 1.0, y: -1.0)
+        ctx.translateBy(x: 0, y: -size.height)
+        
+        let rect = CGRect(origin: .zero, size: size)
+        ctx.draw(cgImage, in: rect)
+        UIColor(white: 0.05, alpha: 0.90).setFill()
+        ctx.fill(rect)
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
 }
 
 
 class viewController : UIViewController {
+    
+    
     
     //  The machine learning model used in this project is the GoogLeNetPlaces model, featured on Apple's developer page.
     let model = GoogLeNetPlaces()
@@ -69,6 +91,10 @@ class viewController : UIViewController {
     
     override func viewDidLoad() {
         
+        let fontURL = Bundle.main.url(forResource: "FreightSansMedium", withExtension: "otf")
+        CTFontManagerRegisterFontsForURL(fontURL! as CFURL, CTFontManagerScope.process, nil)
+        
+        
         //  Setting up the view that will be used to interact with the application. The dimensions have been set to half of the iPad Pro,
         //  since I am using a Macbook Air - the view would not fit within the screen dimensions. The app should be easily scalable.
         
@@ -83,12 +109,17 @@ class viewController : UIViewController {
         let row2 = CGFloat(standardSize.width*3)
         let row3 = CGFloat(standardSize.width*1.05) //  Row for the buttons
         
-        view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.15, alpha: 1.0)
-        
+        let backgroundImage = UIImageView(frame: CGRect(x: 0, y: 0, width: 417, height: 556))
+        if let sample = Bundle.main.path(forResource: "background", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            backgroundImage.image = image?.darkened()
+        }
+        view.addSubview(backgroundImage)
+        view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.10, alpha: 1.0)
         
         titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/2, width: view.frame.width-margin, height: 40))
         titleLabel.text = "Instagram Hashtag Generator"
-        titleLabel.font = UIFont(name: "SF Pro Display", size: 35)
+        titleLabel.font = UIFont(name: "Freight-SansMedium", size: 25)
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
         view.addSubview(titleLabel)
@@ -271,7 +302,7 @@ class viewController : UIViewController {
         labels = [label1, label2, label3, label4, label5, label6]
         
         //  Initialize starting 1
-        label1.textColor = .blue
+        label1.textColor = .purple
         
         view.addSubview(label1)
         view.addSubview(label2)
@@ -419,15 +450,9 @@ class viewController : UIViewController {
         }
         return returnvalue
     }
-    
 }
 
 let vc = viewController()
 vc.view.frame.size = CGSize(width: 417, height: 556)
-
-
-
-
-
 
 PlaygroundPage.current.liveView = vc.view
