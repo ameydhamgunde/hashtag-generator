@@ -53,8 +53,6 @@ extension UIImage {
 
 class viewController : UIViewController {
     
-    
-    
     //  The machine learning model used in this project is the GoogLeNetPlaces model, featured on Apple's developer page.
     let model = GoogLeNetPlaces()
     
@@ -354,7 +352,7 @@ class viewController : UIViewController {
         view.addSubview(instruction2)
         
         instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.5, width: view.frame.width-margin, height: 30))
-        instruction3.text = "3. Done! Copy your hashtags below."
+        instruction3.text = "3. Done!"
         instruction3.font = UIFont(name: "Open Sans", size: 17)
         instruction3.textColor = .white
         view.addSubview(instruction3)
@@ -365,15 +363,25 @@ class viewController : UIViewController {
         let hashtags = sender.view as! UILabel
         UIPasteboard.general.string = hashtags.text
         copiedLabel.text = "Copied!"
+        
+        
     }
     
     func switching (label : UILabel) {
         for u in labels {
             if u == label {
-                u.textColor = .purple
+                let pulse = pulseAnimation(numberOfPulses: 1, radius: 50, position: label.center)
+                pulse.animationDuration = 0.8
+                pulse.backgroundColor = UIColor.purple.cgColor
+                
+                view.layer.insertSublayer(pulse, below: label.layer)
+//                u.textColor = .purple
+                
+                UIView.transition(with: u, duration: 0.25, options: .transitionCrossDissolve, animations: { u.textColor = .purple }, completion: nil)
+                
                 numberOfHashtags = Int(u.text!)!
-            } else {
-                u.textColor = .white
+            } else if u.textColor == .purple {
+                UIView.transition(with: u, duration: 0.25, options: .transitionCrossDissolve, animations: { u.textColor = .white }, completion: nil)
             }
         }
     }
@@ -390,14 +398,39 @@ class viewController : UIViewController {
         copiedLabel.isHidden = false
         copiedLabel.text = "Tap to copy!"
         let imageView = sender.view as! UIImageView
+        
+        let pulse = pulseAnimation(numberOfPulses: 1, radius: 110, position: imageView.center)
+        pulse.animationDuration = 0.8
+        pulse.backgroundColor = UIColor.purple.cgColor
+        
+        view.layer.insertSublayer(pulse, below: imageView.layer)
+        
         finalHashtags = ""
         allScenes = []
         
         for u in images {
             if u == imageView {
-                u.layer.borderColor = UIColor.purple.cgColor
-            } else {
+                
+                let colorChange = CABasicAnimation(keyPath: "borderColor")
+                colorChange.fromValue = UIColor.white.cgColor
+                colorChange.toValue = UIColor.purple.cgColor
+                colorChange.duration = 1
+                colorChange.repeatCount = 1
+                imageView.layer.borderWidth = 2
+                imageView.layer.borderColor = UIColor.purple.cgColor
+                imageView.layer.add(colorChange, forKey: "borderColor")
+
+            } else if u.layer.borderColor == UIColor.purple.cgColor {
+                
+                let colorChange = CABasicAnimation(keyPath: "borderColor")
+                colorChange.fromValue = UIColor.purple.cgColor
+                colorChange.toValue = UIColor.white.cgColor
+                colorChange.duration = 1
+                colorChange.repeatCount = 1
+                u.layer.borderWidth = 2
                 u.layer.borderColor = UIColor.white.cgColor
+                u.layer.add(colorChange, forKey: "borderColor")
+                
             }
         }
         
