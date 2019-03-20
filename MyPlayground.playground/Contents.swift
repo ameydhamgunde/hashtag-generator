@@ -4,16 +4,20 @@
 //  Created by Amey Dhamgunde on 2019-03-17.
 //  Copyright © 2019 Amey Dhamgunde. All rights reserved.
 //
-//  Description: For content creators, a large part of their job is gaining recognition on
+//  Description: For content creators, a large part of their job is gaining recognition on various social media platforms such as Instagram, Facebook, and Twitter. One of the most effective ways to increase your outreach is through the use of hashtags, as it has the benefit that people can find your posts without relying on search and recommendation algorithms on the social media platforms or through mutual followers.
+//
+//  This app aims to help content creators, whether they be influencial figures or photographers. When they are stuck thinking about possible hashtags that people commonly search up, that pertain to their image, this algorithm comes in handy.
+//
+//  The first step is to select the number of hashtags you want to generate: an integer between 1 and 6. This is made convenient for the user through the use of UILabels arranged neatly in a row, made interactive through the use of UITapGestureRecognizers. It is animated using the UIView.animate function and the CoreAnimation library. When one of the numbers are pressed, the logic is written to set the numberOfHashtags integer to the appropriate number selected by the user, and animate both the current and previous selection.
+//
+//  The second step is to the select the image to be analyzed. In practice, this would rely on prompting the user to open their photo library and select an image that would be processed. However, for the nature of this submission, given that this app will be run offline and there is no guarantee that there will be images saved on the testing platform to be used for the app, there have been some example pictures provided. However, the results are not hard coded. Instead, through the use of machine learning from the CoreML library, this app processes these testing images using the GoogLeNetPlaces model.
+//
+//  When the image is selected, the callMLModel function is called. In this function, there is an animation created, changing the border color and adding a pulse effect to the image to let the user know that the selection has been successful. The image is then passed into the scenes function in the GoogLeNetPlaces.swift file, which returns a dictionary [String: Double], representing the name of the scene and the probability of the scene. The top 6 most probable scenes are then stored in an array - the amount specified by the user later formatted as a string. At the end, the results are displayed on a UILabel using an NSMutableAttributedString for formatting.
+//
 //
 
 import PlaygroundSupport
 import UIKit
-import CoreGraphics
-
-//  Used to resize images that are not the required size that GoogLeNetPlaces can handle. Knowing that the image size required is 224x224,
-//  this function is designed to extend the UIImage class and resize it to the specified dimensions.
-//  This inadvertently can stretch the image, but this is a better alternative compared to
 
 extension UIImage {
     func resize() -> UIImage {
@@ -53,7 +57,7 @@ extension UIImage {
 extension UILabel {
     func fadeOutIn (textGiven: String) {
         
-        UIView.animate(withDuration: 0.7, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         })
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
@@ -74,7 +78,7 @@ extension UILabel {
     }
     func fadeOutInColor (textGiven: String, colorChange: UIColor) {
         
-        UIView.animate(withDuration: 0.7, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         })
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
@@ -120,6 +124,7 @@ class viewController : UIViewController {
     var labels : [UILabel] = []
     var resultsLabel = UILabel()
     var copiedLabel = UILabel()
+    var copied = false
     
     var numberOfHashtags : Int = 1
     
@@ -400,10 +405,11 @@ class viewController : UIViewController {
     }
     
     @objc internal func copyIt(_ sender : UITapGestureRecognizer) {
-        let hashtags = sender.view as! UILabel
-        UIPasteboard.general.string = hashtags.text
-        copiedLabel.fadeOutInColor(textGiven: "Copied!", colorChange: UIColor.purple)
-        
+        if !copied {
+            UIPasteboard.general.string = resultsLabel.text
+            copiedLabel.fadeOutInColor(textGiven: "Copied!", colorChange: UIColor.purple)
+            copied = true
+        }
     }
     
     func switching (label : UILabel) {
@@ -495,15 +501,23 @@ class viewController : UIViewController {
             }
         }
         
-        let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300))
-        pulse2.animationDuration = 1.2
         
         
-        view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
+        if resultsLabel.text != finalHashtags {
+            copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
+            resultsLabel.fadeOutIn(textGiven: finalHashtags)
+            
+            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300))
+            pulse2.animationDuration = 1.2
+            
+            
+            view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
+            
+            copied = false
+        }
         
         
-        resultsLabel.fadeOutIn(textGiven: finalHashtags)
-        copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
+        
     }
     
     func hashtagCreator (stringToCreate : String) -> String {
