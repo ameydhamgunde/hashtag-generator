@@ -1,5 +1,5 @@
 //
-//  Instagram Hashtag Generator
+//  Hashtag Generator
 //
 //  Created by Amey Dhamgunde on 2019-03-17.
 //  Copyright © 2019 Amey Dhamgunde. All rights reserved.
@@ -50,6 +50,42 @@ extension UIImage {
     }
 }
 
+extension UILabel {
+    func fadeOutIn (textGiven: String) {
+        
+        UIView.animate(withDuration: 0.7, animations: {
+            self.alpha = 0
+        })
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
+            let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "Helvetica", size: 20)!])
+            var count : Int = 0
+            for u : Character in textGiven {
+                if u == "#" {
+                    myMutableString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:count,length:1))
+                }
+                count += 1
+                
+            }
+            self.attributedText = myMutableString
+            UIView.animate(withDuration: 0.7, animations: {
+                self.alpha = 1.0
+            })
+        })
+    }
+    func fadeOutInColor (textGiven: String, colorChange: UIColor) {
+        
+        UIView.animate(withDuration: 0.7, animations: {
+            self.alpha = 0
+        })
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
+            self.text = textGiven
+            self.textColor = colorChange
+            UIView.animate(withDuration: 0.7, animations: {
+                self.alpha = 1.0
+            })
+        })
+    }
+}
 
 class viewController : UIViewController {
     
@@ -116,8 +152,8 @@ class viewController : UIViewController {
         view.addSubview(backgroundImage)
         view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.10, alpha: 1.0)
         
-        titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/2, width: view.frame.width-margin, height: 40))
-        titleLabel.text = "Instagram Hashtag Generator"
+        titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/3, width: view.frame.width-margin, height: 40))
+        titleLabel.text = "Hashtag Generator"
         titleLabel.font = UIFont(name: "Freight-SansMedium", size: 25)
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
@@ -135,7 +171,7 @@ class viewController : UIViewController {
         }
         
         image1.layer.borderColor = UIColor.white.cgColor
-        image1.layer.borderWidth = 2.5*(view.frame.width/417)
+        image1.layer.borderWidth = 3*(view.frame.width/417)
         image1.isUserInteractionEnabled = true
         image1.contentMode = .scaleAspectFill
         image1.clipsToBounds = true
@@ -154,7 +190,7 @@ class viewController : UIViewController {
         }
         
         image2.layer.borderColor = UIColor.white.cgColor
-        image2.layer.borderWidth = 2.5*(view.frame.width/417)
+        image2.layer.borderWidth = 3*(view.frame.width/417)
         image2.isUserInteractionEnabled = true
         image2.contentMode = .scaleAspectFill
         image2.clipsToBounds = true
@@ -173,7 +209,7 @@ class viewController : UIViewController {
         }
         
         image3.layer.borderColor = UIColor.white.cgColor
-        image3.layer.borderWidth = 2.5*(view.frame.width/417)
+        image3.layer.borderWidth = 3*(view.frame.width/417)
         image3.isUserInteractionEnabled = true
         image3.contentMode = .scaleAspectFill
         image3.clipsToBounds = true
@@ -192,7 +228,7 @@ class viewController : UIViewController {
         }
         
         image4.layer.borderColor = UIColor.white.cgColor
-        image4.layer.borderWidth = 2.5*(view.frame.width/417)
+        image4.layer.borderWidth = 3*(view.frame.width/417)
         image4.isUserInteractionEnabled = true
         image4.contentMode = .scaleAspectFill
         image4.clipsToBounds = true
@@ -211,7 +247,7 @@ class viewController : UIViewController {
         }
         
         image5.layer.borderColor = UIColor.white.cgColor
-        image5.layer.borderWidth = 2.5*(view.frame.width/417)
+        image5.layer.borderWidth = 3*(view.frame.width/417)
         image5.isUserInteractionEnabled = true
         image5.contentMode = .scaleAspectFill
         image5.clipsToBounds = true
@@ -230,7 +266,7 @@ class viewController : UIViewController {
         }
         
         image6.layer.borderColor = UIColor.white.cgColor
-        image6.layer.borderWidth = 2.5*(view.frame.width/417)
+        image6.layer.borderWidth = 3*(view.frame.width/417)
         image6.isUserInteractionEnabled = true
         image6.contentMode = .scaleAspectFill
         image6.clipsToBounds = true
@@ -321,6 +357,7 @@ class viewController : UIViewController {
         resultsLabel.numberOfLines = 0
         resultsLabel.isUserInteractionEnabled = true
         resultsLabel.textColor = .white
+        resultsLabel.alpha = 0
         resultsLabel.addGestureRecognizer(copyRecognizer)
         
         view.addSubview(resultsLabel)
@@ -329,32 +366,35 @@ class viewController : UIViewController {
         let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
         copiedLabel.font = UIFont(name: "Helvetica", size: 14)
         copiedLabel.textAlignment = .center
-        copiedLabel.isHidden = true
         copiedLabel.text = "Tap to copy!"
         copiedLabel.addGestureRecognizer(copyRecognizerLabel)
         copiedLabel.isUserInteractionEnabled = true
         copiedLabel.textColor = .white
+        copiedLabel.alpha = 0
         view.addSubview(copiedLabel)
         
         
         // Setting up the instructions
         
         instruction1 = UILabel(frame: CGRect(x: margin/2, y: margin*1.25, width: view.frame.width-margin, height: 30))
-        instruction1.text = "1. How many hashtags do you need?"
-        instruction1.font = UIFont(name: "San Francisco", size: 17)
         instruction1.textColor = .white
+        let mutableString1 = NSMutableAttributedString(string: "1. How many hashtags do you need?", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        mutableString1.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
+        instruction1.attributedText = mutableString1
         view.addSubview(instruction1)
         
         instruction2 = UILabel(frame: CGRect(x: margin/2, y: margin*2.75, width: view.frame.width-margin, height: 30))
-        instruction2.text = "2. Which image do you need analyzed?"
-        instruction2.font = UIFont(name: "Montserrat", size: 17)
         instruction2.textColor = .white
+        let mutableString2 = NSMutableAttributedString(string: "2. Which image do you need analyzed?", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        mutableString2.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
+        instruction2.attributedText = mutableString2
         view.addSubview(instruction2)
         
         instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.5, width: view.frame.width-margin, height: 30))
-        instruction3.text = "3. Done!"
-        instruction3.font = UIFont(name: "Open Sans", size: 17)
         instruction3.textColor = .white
+        let mutableString3 = NSMutableAttributedString(string: "3. Done!", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        mutableString3.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
+        instruction3.attributedText = mutableString3
         view.addSubview(instruction3)
         
     }
@@ -362,8 +402,7 @@ class viewController : UIViewController {
     @objc internal func copyIt(_ sender : UITapGestureRecognizer) {
         let hashtags = sender.view as! UILabel
         UIPasteboard.general.string = hashtags.text
-        copiedLabel.text = "Copied!"
-        
+        copiedLabel.fadeOutInColor(textGiven: "Copied!", colorChange: UIColor.purple)
         
     }
     
@@ -372,7 +411,6 @@ class viewController : UIViewController {
             if u == label {
                 let pulse = pulseAnimation(numberOfPulses: 1, radius: 50, position: label.center)
                 pulse.animationDuration = 0.8
-                pulse.backgroundColor = UIColor.purple.cgColor
                 
                 view.layer.insertSublayer(pulse, below: label.layer)
 //                u.textColor = .purple
@@ -395,13 +433,10 @@ class viewController : UIViewController {
     
     @objc internal func callMLModel(_ sender : UITapGestureRecognizer) {
         
-        copiedLabel.isHidden = false
-        copiedLabel.text = "Tap to copy!"
         let imageView = sender.view as! UIImageView
         
         let pulse = pulseAnimation(numberOfPulses: 1, radius: 110, position: imageView.center)
         pulse.animationDuration = 0.8
-        pulse.backgroundColor = UIColor.purple.cgColor
         
         view.layer.insertSublayer(pulse, below: imageView.layer)
         
@@ -409,25 +444,25 @@ class viewController : UIViewController {
         allScenes = []
         
         for u in images {
-            if u == imageView {
+            if u == imageView && u.layer.borderColor != UIColor.purple.cgColor {
                 
                 let colorChange = CABasicAnimation(keyPath: "borderColor")
                 colorChange.fromValue = UIColor.white.cgColor
                 colorChange.toValue = UIColor.purple.cgColor
                 colorChange.duration = 1
                 colorChange.repeatCount = 1
-                imageView.layer.borderWidth = 2
+                imageView.layer.borderWidth = 3
                 imageView.layer.borderColor = UIColor.purple.cgColor
                 imageView.layer.add(colorChange, forKey: "borderColor")
 
-            } else if u.layer.borderColor == UIColor.purple.cgColor {
+            } else if u.layer.borderColor == UIColor.purple.cgColor && u != imageView {
                 
                 let colorChange = CABasicAnimation(keyPath: "borderColor")
                 colorChange.fromValue = UIColor.purple.cgColor
                 colorChange.toValue = UIColor.white.cgColor
                 colorChange.duration = 1
                 colorChange.repeatCount = 1
-                u.layer.borderWidth = 2
+                u.layer.borderWidth = 3
                 u.layer.borderColor = UIColor.white.cgColor
                 u.layer.add(colorChange, forKey: "borderColor")
                 
@@ -460,7 +495,15 @@ class viewController : UIViewController {
             }
         }
         
-        resultsLabel.text = finalHashtags
+        let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300))
+        pulse2.animationDuration = 1.2
+        
+        
+        view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
+        
+        
+        resultsLabel.fadeOutIn(textGiven: finalHashtags)
+        copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
     }
     
     func hashtagCreator (stringToCreate : String) -> String {
@@ -491,6 +534,8 @@ class viewController : UIViewController {
         }
         return returnvalue
     }
+    
+    
 }
 
 let vc = viewController()

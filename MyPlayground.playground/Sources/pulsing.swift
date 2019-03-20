@@ -23,7 +23,7 @@ public class pulseAnimation : CALayer {
     public init (numberOfPulses:Float = Float.infinity, radius:CGFloat, position:CGPoint) {
         super.init()
         
-        self.backgroundColor = UIColor.black.cgColor
+        self.backgroundColor = UIColor.purple.cgColor
         self.contentsScale = UIScreen.main.scale
         self.opacity = 0
         self.radius = radius
