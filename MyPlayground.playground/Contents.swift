@@ -76,13 +76,13 @@ extension UILabel {
             - textGiven: text to replace the given label with as String
      */
     
-    func fadeOutIn (textGiven: String) {
+    func fadeOutIn (textGiven: String, multiplier: CGFloat) {
         
         UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         })
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
-            let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "OpenSans-Regular", size: 18)!])
+            let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "OpenSans-Regular", size: 18*multiplier)!])
             var count : Int = 0
             for u : Character in textGiven {
                 if u == "#" {
@@ -165,7 +165,7 @@ class viewController : UIViewController {
         let fontURL2 = Bundle.main.url(forResource: "OpenSans-Regular", withExtension: "ttf")
         CTFontManagerRegisterFontsForURL(fontURL2! as CFURL, CTFontManagerScope.process, nil)
         
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 417, height:556))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         self.view = view
         
         let standardSize = CGSize(width: (view.frame.width/417)*100, height: (view.frame.width/417)*100)
@@ -188,9 +188,9 @@ class viewController : UIViewController {
         view.addSubview(backgroundImage)
 
         
-        titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/3, width: view.frame.width-margin, height: 40))
+        titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/3, width: view.frame.width-margin, height: 40*(self.view.frame.width/417)))
         titleLabel.text = "Hashtag Generator"
-        titleLabel.font = UIFont(name: "Freight-SansMedium", size: 25)
+        titleLabel.font = UIFont(name: "Freight-SansMedium", size: 25*(self.view.frame.width/417))
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
         view.addSubview(titleLabel)
@@ -198,24 +198,24 @@ class viewController : UIViewController {
         
         // Setting up the instructions
         
-        instruction1 = UILabel(frame: CGRect(x: margin/2, y: margin*1.25, width: view.frame.width-margin, height: 30))
+        instruction1 = UILabel(frame: CGRect(x: margin/2, y: margin*1.25, width: view.frame.width-margin, height: 30*(self.view.frame.width/417)))
         instruction1.textColor = .white
-        let mutableString1 = NSMutableAttributedString(string: "1. How many hashtags do you need?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
+        let mutableString1 = NSMutableAttributedString(string: "1. How many hashtags do you need?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17*(self.view.frame.width/417))!])
         mutableString1.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction1.attributedText = mutableString1
         view.addSubview(instruction1)
         
         
-        instruction2 = UILabel(frame: CGRect(x: margin/2, y: margin*2.75, width: view.frame.width-margin, height: 30))
+        instruction2 = UILabel(frame: CGRect(x: margin/2, y: margin*2.75, width: view.frame.width-margin, height: 30*(self.view.frame.width/417)))
         instruction2.textColor = .white
-        let mutableString2 = NSMutableAttributedString(string: "2. Which image do you need analyzed?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
+        let mutableString2 = NSMutableAttributedString(string: "2. Which image do you need analyzed?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17*(self.view.frame.width/417))!])
         mutableString2.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction2.attributedText = mutableString2
         view.addSubview(instruction2)
         
-        instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.4, width: view.frame.width-margin, height: 30))
+        instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.4, width: view.frame.width-margin, height: 30*(self.view.frame.width/417)))
         instruction3.textColor = .white
-        let mutableString3 = NSMutableAttributedString(string: "3. Done!", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
+        let mutableString3 = NSMutableAttributedString(string: "3. Done!", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17*(self.view.frame.width/417))!])
         mutableString3.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction3.attributedText = mutableString3
         view.addSubview(instruction3)
@@ -225,16 +225,18 @@ class viewController : UIViewController {
         
         let buttonWidth = (view.bounds.width-margin*2)/6
         
-        button1 = UILabel(frame: CGRect(x: margin, y: buttonRow, width: buttonWidth, height: 20))
+        button1 = UILabel(frame: CGRect(x: margin, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button1.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button1.text = "1"
         button1.textAlignment = .center
         button1.isUserInteractionEnabled = true
         button1.textColor = .white
         button1.addGestureRecognizer(gestureRecognizer)
         
-        button2 = UILabel(frame: CGRect(x: margin+buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        button2 = UILabel(frame: CGRect(x: margin+buttonWidth, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button2.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button2.text = "2"
         button2.textAlignment = .center
         button2.isUserInteractionEnabled = true
@@ -242,32 +244,36 @@ class viewController : UIViewController {
         button2.addGestureRecognizer(gestureRecognizer2)
         
         
-        button3 = UILabel(frame: CGRect(x: margin+2*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        button3 = UILabel(frame: CGRect(x: margin+2*buttonWidth, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button3.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button3.text = "3"
         button3.textAlignment = .center
         button3.isUserInteractionEnabled = true
         button3.textColor = .white
         button3.addGestureRecognizer(gestureRecognizer3)
         
-        button4 = UILabel(frame: CGRect(x: margin+3*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        button4 = UILabel(frame: CGRect(x: margin+3*buttonWidth, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button4.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button4.text = "4"
         button4.textAlignment = .center
         button4.isUserInteractionEnabled = true
         button4.textColor = .white
         button4.addGestureRecognizer(gestureRecognizer4)
         
-        button5 = UILabel(frame: CGRect(x: margin+4*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        button5 = UILabel(frame: CGRect(x: margin+4*buttonWidth, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button5.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button5.text = "5"
         button5.textAlignment = .center
         button5.isUserInteractionEnabled = true
         button5.textColor = .white
         button5.addGestureRecognizer(gestureRecognizer5)
         
-        button6 = UILabel(frame: CGRect(x: margin+5*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        button6 = UILabel(frame: CGRect(x: margin+5*buttonWidth, y: buttonRow, width: buttonWidth, height: 20*(self.view.frame.width/417)))
         let gestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button6.font = UIFont(name: "OpenSans-Regular", size: 15*(self.view.frame.width/417))
         button6.text = "6"
         button6.textAlignment = .center
         button6.isUserInteractionEnabled = true
@@ -391,9 +397,9 @@ class viewController : UIViewController {
         
         //  Results of machine learning assisted hashtag generation
         
-        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 8.95*margin, width: view.frame.width-margin, height: 60))
+        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 8.95*margin, width: view.frame.width-margin, height: 60*(self.view.frame.width/417)))
         let copyRecognizer = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        resultsLabel.font = UIFont(name: "OpenSans-Regular", size: 18)
+        resultsLabel.font = UIFont(name: "OpenSans-Regular", size: 18*(self.view.frame.width/417))
         resultsLabel.textAlignment = .center
         resultsLabel.lineBreakMode = .byWordWrapping
         resultsLabel.numberOfLines = 0
@@ -405,9 +411,9 @@ class viewController : UIViewController {
         view.addSubview(resultsLabel)
         
         
-        copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100, height: 20))
+        copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100*(self.view.frame.width/417), height: 20*(self.view.frame.width/417)))
         let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        copiedLabel.font = UIFont(name: "OpenSans-Regular", size: 14)
+        copiedLabel.font = UIFont(name: "OpenSans-Regular", size: 14*(self.view.frame.width/417))
         copiedLabel.textAlignment = .center
         copiedLabel.text = "Tap to copy!"
         copiedLabel.addGestureRecognizer(copyRecognizerLabel)
@@ -461,7 +467,7 @@ class viewController : UIViewController {
         
         let imageView = sender.view as! UIImageView
         
-        let pulse = pulseAnimation(numberOfPulses: 1, radius: 110, position: imageView.center, duration: 0.8)
+        let pulse = pulseAnimation(numberOfPulses: 1, radius: 110*(self.view.frame.width/417), position: imageView.center, duration: 0.8)
         
         view.layer.insertSublayer(pulse, below: imageView.layer)
         
@@ -476,7 +482,7 @@ class viewController : UIViewController {
                 colorChange.toValue = UIColor.purple.cgColor
                 colorChange.duration = 1
                 colorChange.repeatCount = 1
-                imageView.layer.borderWidth = 3
+                imageView.layer.borderWidth = 3*(self.view.frame.width/417)
                 imageView.layer.borderColor = UIColor.purple.cgColor
                 imageView.layer.add(colorChange, forKey: "borderColor")
 
@@ -487,7 +493,7 @@ class viewController : UIViewController {
                 colorChange.toValue = UIColor.white.cgColor
                 colorChange.duration = 1
                 colorChange.repeatCount = 1
-                u.layer.borderWidth = 3
+                u.layer.borderWidth = 3*(self.view.frame.width/417)
                 u.layer.borderColor = UIColor.white.cgColor
                 u.layer.add(colorChange, forKey: "borderColor")
                 
@@ -523,12 +529,12 @@ class viewController : UIViewController {
         }
         
         if resultsLabel.text != finalHashtags {
-            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300), duration: 1.2)
+            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500*(self.view.frame.width/417), position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+250*(self.view.frame.width/417)), duration: 1.2)
             
             view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
             
             copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
-            resultsLabel.fadeOutIn(textGiven: finalHashtags)
+            resultsLabel.fadeOutIn(textGiven: finalHashtags, multiplier: (self.view.frame.width/417))
             
             copied = false
         }
@@ -576,6 +582,6 @@ class viewController : UIViewController {
 }
 
 let vc = viewController()
-vc.view.frame.size = CGSize(width: 417, height: 556)
+//vc.view.frame.size = CGSize(width: 417, height: 556)
 
 PlaygroundPage.current.liveView = vc.view
