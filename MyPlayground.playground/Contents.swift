@@ -78,11 +78,11 @@ extension UILabel {
     
     func fadeOutIn (textGiven: String) {
         
-        UIView.animate(withDuration: 0.4, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         })
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.4, execute: { () -> Void in
-            let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "Helvetica", size: 20)!])
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
+            let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "OpenSans-Regular", size: 18)!])
             var count : Int = 0
             for u : Character in textGiven {
                 if u == "#" {
@@ -92,7 +92,7 @@ extension UILabel {
                 
             }
             self.attributedText = myMutableString
-            UIView.animate(withDuration: 0.5, animations: {
+            UIView.animate(withDuration: 0.6, animations: {
                 self.alpha = 1.0
             })
         })
@@ -107,13 +107,13 @@ extension UILabel {
     
     func fadeOutInColor (textGiven: String, colorChange: UIColor) {
         
-        UIView.animate(withDuration: 0.4, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         })
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.4, execute: { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
             self.text = textGiven
             self.textColor = colorChange
-            UIView.animate(withDuration: 0.5, animations: {
+            UIView.animate(withDuration: 0.6, animations: {
                 self.alpha = 1.0
             })
         })
@@ -162,6 +162,8 @@ class viewController : UIViewController {
         
         let fontURL = Bundle.main.url(forResource: "FreightSansMedium", withExtension: "otf")
         CTFontManagerRegisterFontsForURL(fontURL! as CFURL, CTFontManagerScope.process, nil)
+        let fontURL2 = Bundle.main.url(forResource: "OpenSans-Regular", withExtension: "ttf")
+        CTFontManagerRegisterFontsForURL(fontURL2! as CFURL, CTFontManagerScope.process, nil)
         
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 417, height:556))
         self.view = view
@@ -176,13 +178,15 @@ class viewController : UIViewController {
         let imageRow2 = CGFloat(standardSize.width*3)
         let buttonRow = CGFloat(standardSize.width*1.05)
         
-        let backgroundImage = UIImageView(frame: CGRect(x: 0, y: 0, width: 417, height: 556))
+        
+        //  The background image was sourced from https://www.fircroft.com/blogs/londons-newest-tallest-tower-the-tulip-83231914163
+        let backgroundImage = UIImageView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         if let sample = Bundle.main.path(forResource: "background", ofType: "jpg") {
             let image = UIImage(contentsOfFile: sample)
             backgroundImage.image = image?.changeBrightness(white: 0.05, alpha: 0.9)
         }
         view.addSubview(backgroundImage)
-        view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.10, alpha: 1.0)
+
         
         titleLabel = UILabel(frame: CGRect(x: margin/2, y: margin/3, width: view.frame.width-margin, height: 40))
         titleLabel.text = "Hashtag Generator"
@@ -196,21 +200,22 @@ class viewController : UIViewController {
         
         instruction1 = UILabel(frame: CGRect(x: margin/2, y: margin*1.25, width: view.frame.width-margin, height: 30))
         instruction1.textColor = .white
-        let mutableString1 = NSMutableAttributedString(string: "1. How many hashtags do you need?", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        let mutableString1 = NSMutableAttributedString(string: "1. How many hashtags do you need?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
         mutableString1.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction1.attributedText = mutableString1
         view.addSubview(instruction1)
         
+        
         instruction2 = UILabel(frame: CGRect(x: margin/2, y: margin*2.75, width: view.frame.width-margin, height: 30))
         instruction2.textColor = .white
-        let mutableString2 = NSMutableAttributedString(string: "2. Which image do you need analyzed?", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        let mutableString2 = NSMutableAttributedString(string: "2. Which image do you need analyzed?", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
         mutableString2.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction2.attributedText = mutableString2
         view.addSubview(instruction2)
         
-        instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.5, width: view.frame.width-margin, height: 30))
+        instruction3 = UILabel(frame: CGRect(x: margin/2, y: margin*8.4, width: view.frame.width-margin, height: 30))
         instruction3.textColor = .white
-        let mutableString3 = NSMutableAttributedString(string: "3. Done!", attributes: [NSAttributedString.Key.font :UIFont(name: "Helvetica", size: 17)!])
+        let mutableString3 = NSMutableAttributedString(string: "3. Done!", attributes: [NSAttributedString.Key.font :UIFont(name: "OpenSans-Regular", size: 17)!])
         mutableString3.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.purple, range: NSRange(location:0,length:2))
         instruction3.attributedText = mutableString3
         view.addSubview(instruction3)
@@ -285,7 +290,7 @@ class viewController : UIViewController {
         
         //  Images
         
-        
+        //  The first example image was sourced from https://en.wikipedia.org/wiki/Jade_Belt_Bridge#/media/File:Gaoliang_Bridge.JPG
         image1 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: imageRow1), size: standardSize))
         let imageGestureRecognizer1 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
@@ -300,6 +305,7 @@ class viewController : UIViewController {
         image1.addGestureRecognizer(imageGestureRecognizer1)
         
         
+        //  The second example image was sourced from https://s3-media1.fl.yelpcdn.com/bphoto/53W4ATaHudIsoLQVE4TTug/o.jpg
         image2 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: imageRow1), size: standardSize))
         let imageGestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img2", ofType: "jpg") {
@@ -314,6 +320,7 @@ class viewController : UIViewController {
         image2.addGestureRecognizer(imageGestureRecognizer2)
         
         
+        //  The third example image was sourced from https://www.visitnsw.com/sites/visitnsw/files/styles/gallery_full_width/public/2017-05/Charlotte_Pass_Ski_Resort%2C_Kosciuszko_National_Park._Photo_by_S_Pawsey_and_Charlotte_Pass_Village_Pty_Ltd.jpg?itok=JH3vpdTc
         image3 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-2*margin, y: imageRow1), size: standardSize))
         let imageGestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img3", ofType: "jpg") {
@@ -328,6 +335,7 @@ class viewController : UIViewController {
         image3.addGestureRecognizer(imageGestureRecognizer3)
 
         
+        //  The fourth example image was sourced from https://www.canyontours.com/wp-content/uploads/2014/10/grand-canyon-west-rim-colorado-river-500x500.jpg
         image4 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: imageRow2), size: standardSize))
         let imageGestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img4", ofType: "jpg") {
@@ -342,6 +350,7 @@ class viewController : UIViewController {
         image4.addGestureRecognizer(imageGestureRecognizer4)
         
         
+        //  The fifth example image was sourced from http://www.tunisiesoir.com/wp-content/uploads/2019/02/190218153155_1_540x360.jpg
         image5 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: imageRow2), size: standardSize))
         let imageGestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img5", ofType: "jpg") {
@@ -355,7 +364,7 @@ class viewController : UIViewController {
         image5.clipsToBounds = true
         image5.addGestureRecognizer(imageGestureRecognizer5)
         
-        
+        //  The sixth example image was sourced from https://i2.wp.com/www.alabamanewscenter.com/wp-content/uploads/2018/04/alabama-power-smart-house00029.jpg?ssl=1
         image6 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-margin*2, y: imageRow2), size: standardSize))
         let imageGestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
         if let sample = Bundle.main.path(forResource: "img6", ofType: "jpg") {
@@ -382,9 +391,9 @@ class viewController : UIViewController {
         
         //  Results of machine learning assisted hashtag generation
         
-        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 9.1*margin, width: view.frame.width-margin, height: 50))
+        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 8.95*margin, width: view.frame.width-margin, height: 60))
         let copyRecognizer = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        resultsLabel.font = UIFont(name: "Helvetica", size: 20)
+        resultsLabel.font = UIFont(name: "OpenSans-Regular", size: 18)
         resultsLabel.textAlignment = .center
         resultsLabel.lineBreakMode = .byWordWrapping
         resultsLabel.numberOfLines = 0
@@ -398,7 +407,7 @@ class viewController : UIViewController {
         
         copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100, height: 20))
         let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        copiedLabel.font = UIFont(name: "Helvetica", size: 14)
+        copiedLabel.font = UIFont(name: "OpenSans-Regular", size: 14)
         copiedLabel.textAlignment = .center
         copiedLabel.text = "Tap to copy!"
         copiedLabel.addGestureRecognizer(copyRecognizerLabel)
@@ -514,12 +523,12 @@ class viewController : UIViewController {
         }
         
         if resultsLabel.text != finalHashtags {
-            copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
-            resultsLabel.fadeOutIn(textGiven: finalHashtags)
-            
-            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300), duration: 0.8)
+            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300), duration: 1.2)
             
             view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
+            
+            copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
+            resultsLabel.fadeOutIn(textGiven: finalHashtags)
             
             copied = false
         }
