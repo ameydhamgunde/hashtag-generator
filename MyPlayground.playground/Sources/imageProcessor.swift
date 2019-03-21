@@ -1,17 +1,25 @@
 //
 //  imageProcessor.swift
 //
-//  Created by Amey Dhamgunde on 2019-03-17.
+//  Created by Amey Dhamgunde on 2019-03-18.
 //  Copyright © 2019 Amey Dhamgunde. All rights reserved.
 //  
-//  This method is used to convert from CGImage to CVPixelBuffer, the latter being an accepted argument by the GoogLeNetPlaces ML model.
+//  This struct contains a method that is used to convert from CGImage to CVPixelBuffer, the latter being an accepted argument by the GoogLeNetPlaces ML model.
 //
 
 import CoreVideo
 import UIKit
 
 public struct imageProcessor {
-    public static func pixelBuffer (forImage image:CGImage) -> CVPixelBuffer? {
+    
+    /**
+        Converts the CGImage input into a CVPixelBuffer output
+        - parameters:
+            - image: the image to be converted as CGImage
+        - returns: a converted image in the format CVPixelBuffer
+     */
+    
+    public static func pixelBuffer (image: CGImage) -> CVPixelBuffer? {
         
         
         let frameSize = CGSize(width: image.width, height: image.height)

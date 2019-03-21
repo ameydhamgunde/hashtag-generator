@@ -1,3 +1,12 @@
+//
+//  pulsing.swift
+//
+//  Created by Amey Dhamgunde on 2019-03-20.
+//  Copyright © 2019 Amey Dhamgunde. All rights reserved.
+//
+//  This class creates an pulse animation with CoreAnimation, used in various places in the app.
+//
+
 import UIKit
 
 public class pulseAnimation : CALayer {
@@ -20,7 +29,7 @@ public class pulseAnimation : CALayer {
     }
     
     
-    public init (numberOfPulses:Float = Float.infinity, radius:CGFloat, position:CGPoint) {
+    public init (numberOfPulses:Float = Float.infinity, radius:CGFloat, position:CGPoint, duration:TimeInterval) {
         super.init()
         
         self.backgroundColor = UIColor.purple.cgColor
@@ -32,6 +41,7 @@ public class pulseAnimation : CALayer {
         
         self.bounds = CGRect(x: 0, y: 0, width: radius * 2, height: radius * 2)
         self.cornerRadius = radius
+        self.animationDuration = duration
         
         
         DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
@@ -41,9 +51,6 @@ public class pulseAnimation : CALayer {
                 self.add(self.animationGroup, forKey: "pulse")
             }
         }
-        
-        
-        
     }
     
     
@@ -63,7 +70,6 @@ public class pulseAnimation : CALayer {
         opacityAnimation.values = [0.4, 0.8, 0]
         opacityAnimation.keyTimes = [0, 0.2, 1]
         
-        
         return opacityAnimation
     }
     
@@ -76,10 +82,5 @@ public class pulseAnimation : CALayer {
         self.animationGroup.timingFunction = defaultCurve
         
         self.animationGroup.animations = [createScaleAnimation(), createOpacityAnimation()]
-        
-        
     }
-    
-    
-    
 }

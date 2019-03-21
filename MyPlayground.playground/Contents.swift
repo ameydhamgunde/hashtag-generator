@@ -20,6 +20,12 @@ import PlaygroundSupport
 import UIKit
 
 extension UIImage {
+    
+    /**
+        Resizes the image to the required 224x224 dimension required by GoogLeNetPlaces.
+        - returns: the same image, resized to 224x224 pixels.
+     */
+    
     func resize() -> UIImage {
         let targetSize = CGSize.init(width: 224, height: 224)
         
@@ -33,7 +39,15 @@ extension UIImage {
         return newImage!
     }
     
-    func darkened() -> UIImage? {
+    /**
+        Changes the brightness of the specified image and returns it.
+        - parameters:
+            - white: brightness of the image as CGFloat
+            - alpha: transparency of the image as CGFloat
+        - returns: the image with the changed brightness as UIImage?
+     */
+    
+    func changeBrightness (white: CGFloat, alpha: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         defer { UIGraphicsEndImageContext() }
         
@@ -47,7 +61,7 @@ extension UIImage {
         
         let rect = CGRect(origin: .zero, size: size)
         ctx.draw(cgImage, in: rect)
-        UIColor(white: 0.05, alpha: 0.90).setFill()
+        UIColor(white: white, alpha: alpha).setFill()
         ctx.fill(rect)
         
         return UIGraphicsGetImageFromCurrentImageContext()
@@ -55,12 +69,19 @@ extension UIImage {
 }
 
 extension UILabel {
+    
+    /**
+        Animation for the fading out and in of a label, with purple hashtags (#).
+        - parameters:
+            - textGiven: text to replace the given label with as String
+     */
+    
     func fadeOutIn (textGiven: String) {
         
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.4, animations: {
             self.alpha = 0
         })
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.4, execute: { () -> Void in
             let myMutableString = NSMutableAttributedString(string: textGiven, attributes: [NSAttributedString.Key.font : UIFont(name: "Helvetica", size: 20)!])
             var count : Int = 0
             for u : Character in textGiven {
@@ -71,20 +92,28 @@ extension UILabel {
                 
             }
             self.attributedText = myMutableString
-            UIView.animate(withDuration: 0.7, animations: {
+            UIView.animate(withDuration: 0.5, animations: {
                 self.alpha = 1.0
             })
         })
     }
+    
+    /**
+        Animation for fading out and in of a label, while changing text color.
+        - parameters:
+            - textGiven: text to replace the given label with as String
+            - colorChange: color the text change to
+     */
+    
     func fadeOutInColor (textGiven: String, colorChange: UIColor) {
         
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.4, animations: {
             self.alpha = 0
         })
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.5, execute: { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.4, execute: { () -> Void in
             self.text = textGiven
             self.textColor = colorChange
-            UIView.animate(withDuration: 0.7, animations: {
+            UIView.animate(withDuration: 0.5, animations: {
                 self.alpha = 1.0
             })
         })
@@ -97,8 +126,12 @@ class viewController : UIViewController {
     let model = GoogLeNetPlaces()
     
     var margin = CGFloat()
-    var allScenes : [String] = []
-    var finalHashtags = String()
+    
+    var titleLabel = UILabel()
+    
+    var instruction1 = UILabel()
+    var instruction2 = UILabel()
+    var instruction3 = UILabel()
     
     var image1 = UIImageView()
     var image2 = UIImageView()
@@ -108,20 +141,16 @@ class viewController : UIViewController {
     var image6 = UIImageView()
     var images : [UIImageView] = []
     
-    var label1 = UILabel()
-    var label2 = UILabel()
-    var label3 = UILabel()
-    var label4 = UILabel()
-    var label5 = UILabel()
-    var label6 = UILabel()
-    
-    var titleLabel = UILabel()
-    
-    var instruction1 = UILabel()
-    var instruction2 = UILabel()
-    var instruction3 = UILabel()
-    
+    var button1 = UILabel()
+    var button2 = UILabel()
+    var button3 = UILabel()
+    var button4 = UILabel()
+    var button5 = UILabel()
+    var button6 = UILabel()
     var labels : [UILabel] = []
+    
+    var allScenes : [String] = []
+    var finalHashtags = String()
     var resultsLabel = UILabel()
     var copiedLabel = UILabel()
     var copied = false
@@ -134,25 +163,23 @@ class viewController : UIViewController {
         let fontURL = Bundle.main.url(forResource: "FreightSansMedium", withExtension: "otf")
         CTFontManagerRegisterFontsForURL(fontURL! as CFURL, CTFontManagerScope.process, nil)
         
-        
-        //  Setting up the view that will be used to interact with the application. The dimensions have been set to half of the iPad Pro,
-        //  since I am using a Macbook Air - the view would not fit within the screen dimensions. The app should be easily scalable.
-        
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 417, height:556))
         self.view = view
         
         let standardSize = CGSize(width: (view.frame.width/417)*100, height: (view.frame.width/417)*100)
-        margin = standardSize.width/2   //  This is used to keep all the margins the same, based off the standard size for the images. This is thus dependent on the size of the view, allowing the app to be easily scaled up.
         
-        // By making the rows dependent on the screen size, it makes the app adaptable.
-        let row1 = CGFloat(standardSize.width*1.85)
-        let row2 = CGFloat(standardSize.width*3)
-        let row3 = CGFloat(standardSize.width*1.05) //  Row for the buttons
+        
+        margin = standardSize.width/2
+        //  This is used to keep all the margins the same, based off the standard size for the images. This is thus dependent on the size of the view, allowing the app to be easily scaled up.
+        
+        let imageRow1 = CGFloat(standardSize.width*1.85)
+        let imageRow2 = CGFloat(standardSize.width*3)
+        let buttonRow = CGFloat(standardSize.width*1.05)
         
         let backgroundImage = UIImageView(frame: CGRect(x: 0, y: 0, width: 417, height: 556))
         if let sample = Bundle.main.path(forResource: "background", ofType: "jpg") {
             let image = UIImage(contentsOfFile: sample)
-            backgroundImage.image = image?.darkened()
+            backgroundImage.image = image?.changeBrightness(white: 0.05, alpha: 0.9)
         }
         view.addSubview(backgroundImage)
         view.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.10, alpha: 1.0)
@@ -163,220 +190,6 @@ class viewController : UIViewController {
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
         view.addSubview(titleLabel)
-        
-        //  Image 1 and gestureRecognizers
-        
-        let imageGestureRecognizer1 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image1 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: row1), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image1.image = image
-        }
-        
-        image1.layer.borderColor = UIColor.white.cgColor
-        image1.layer.borderWidth = 3*(view.frame.width/417)
-        image1.isUserInteractionEnabled = true
-        image1.contentMode = .scaleAspectFill
-        image1.clipsToBounds = true
-        image1.addGestureRecognizer(imageGestureRecognizer1)
-        
-        
-        //  Image 2
-        
-        let imageGestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image2 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: row1), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img2", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image2.image = image
-        }
-        
-        image2.layer.borderColor = UIColor.white.cgColor
-        image2.layer.borderWidth = 3*(view.frame.width/417)
-        image2.isUserInteractionEnabled = true
-        image2.contentMode = .scaleAspectFill
-        image2.clipsToBounds = true
-        image2.addGestureRecognizer(imageGestureRecognizer2)
-        
-        
-        //  Image 3
-        
-        let imageGestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image3 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-2*margin, y: row1), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img3", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image3.image = image
-        }
-        
-        image3.layer.borderColor = UIColor.white.cgColor
-        image3.layer.borderWidth = 3*(view.frame.width/417)
-        image3.isUserInteractionEnabled = true
-        image3.contentMode = .scaleAspectFill
-        image3.clipsToBounds = true
-        image3.addGestureRecognizer(imageGestureRecognizer3)
-        
-        
-        //  Image 4
-        
-        let imageGestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image4 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: row2), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img4", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image4.image = image
-        }
-        
-        image4.layer.borderColor = UIColor.white.cgColor
-        image4.layer.borderWidth = 3*(view.frame.width/417)
-        image4.isUserInteractionEnabled = true
-        image4.contentMode = .scaleAspectFill
-        image4.clipsToBounds = true
-        image4.addGestureRecognizer(imageGestureRecognizer4)
-        
-        
-        //  Image 5
-        
-        let imageGestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image5 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: row2), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img5", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image5.image = image
-        }
-        
-        image5.layer.borderColor = UIColor.white.cgColor
-        image5.layer.borderWidth = 3*(view.frame.width/417)
-        image5.isUserInteractionEnabled = true
-        image5.contentMode = .scaleAspectFill
-        image5.clipsToBounds = true
-        image5.addGestureRecognizer(imageGestureRecognizer5)
-        
-        
-        //  Image 6
-        
-        let imageGestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
-        
-        image6 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-margin*2, y: row2), size: standardSize))
-        
-        if let sample = Bundle.main.path(forResource: "img6", ofType: "jpg") {
-            let image = UIImage(contentsOfFile: sample)
-            image6.image = image
-        }
-        
-        image6.layer.borderColor = UIColor.white.cgColor
-        image6.layer.borderWidth = 3*(view.frame.width/417)
-        image6.isUserInteractionEnabled = true
-        image6.contentMode = .scaleAspectFill
-        image6.clipsToBounds = true
-        image6.addGestureRecognizer(imageGestureRecognizer6)
-        
-        view.addSubview(image1)
-        view.addSubview(image2)
-        view.addSubview(image3)
-        view.addSubview(image4)
-        view.addSubview(image5)
-        view.addSubview(image6)
-        images = [image1, image2, image3, image4, image5, image6]
-        
-        
-        //  Buttons for how many hashtags to generate.
-        
-        let buttonWidth = (view.bounds.width-margin*2)/6
-        
-        
-        label1 = UILabel(frame: CGRect(x: margin, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label1.text = "1"
-        label1.textAlignment = .center
-        label1.isUserInteractionEnabled = true
-        label1.textColor = .white
-        label1.addGestureRecognizer(gestureRecognizer)
-        
-        label2 = UILabel(frame: CGRect(x: margin+buttonWidth, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label2.text = "2"
-        label2.textAlignment = .center
-        label2.isUserInteractionEnabled = true
-        label2.textColor = .white
-        label2.addGestureRecognizer(gestureRecognizer2)
-
-        
-        label3 = UILabel(frame: CGRect(x: margin+2*buttonWidth, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label3.text = "3"
-        label3.textAlignment = .center
-        label3.isUserInteractionEnabled = true
-        label3.textColor = .white
-        label3.addGestureRecognizer(gestureRecognizer3)
-
-        label4 = UILabel(frame: CGRect(x: margin+3*buttonWidth, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label4.text = "4"
-        label4.textAlignment = .center
-        label4.isUserInteractionEnabled = true
-        label4.textColor = .white
-        label4.addGestureRecognizer(gestureRecognizer4)
-
-        label5 = UILabel(frame: CGRect(x: margin+4*buttonWidth, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label5.text = "5"
-        label5.textAlignment = .center
-        label5.isUserInteractionEnabled = true
-        label5.textColor = .white
-        label5.addGestureRecognizer(gestureRecognizer5)
-
-        label6 = UILabel(frame: CGRect(x: margin+5*buttonWidth, y: row3, width: buttonWidth, height: 20))
-        let gestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
-        label6.text = "6"
-        label6.textAlignment = .center
-        label6.isUserInteractionEnabled = true
-        label6.textColor = .white
-        label6.addGestureRecognizer(gestureRecognizer6)
-
-        labels = [label1, label2, label3, label4, label5, label6]
-        
-        //  Initialize starting 1
-        label1.textColor = .purple
-        
-        view.addSubview(label1)
-        view.addSubview(label2)
-        view.addSubview(label3)
-        view.addSubview(label4)
-        view.addSubview(label5)
-        view.addSubview(label6)
-        
-        
-        //  Adding results
-        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 9.1*margin, width: view.frame.width-margin, height: 50))
-        let copyRecognizer = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        resultsLabel.font = UIFont(name: "Helvetica", size: 20)
-        resultsLabel.textAlignment = .center
-        resultsLabel.lineBreakMode = .byWordWrapping
-        resultsLabel.numberOfLines = 0
-        resultsLabel.isUserInteractionEnabled = true
-        resultsLabel.textColor = .white
-        resultsLabel.alpha = 0
-        resultsLabel.addGestureRecognizer(copyRecognizer)
-        
-        view.addSubview(resultsLabel)
-        
-        copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100, height: 20))
-        let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
-        copiedLabel.font = UIFont(name: "Helvetica", size: 14)
-        copiedLabel.textAlignment = .center
-        copiedLabel.text = "Tap to copy!"
-        copiedLabel.addGestureRecognizer(copyRecognizerLabel)
-        copiedLabel.isUserInteractionEnabled = true
-        copiedLabel.textColor = .white
-        copiedLabel.alpha = 0
-        view.addSubview(copiedLabel)
         
         
         // Setting up the instructions
@@ -402,24 +215,223 @@ class viewController : UIViewController {
         instruction3.attributedText = mutableString3
         view.addSubview(instruction3)
         
+        
+        //  Buttons for number of hashtags to generate
+        
+        let buttonWidth = (view.bounds.width-margin*2)/6
+        
+        button1 = UILabel(frame: CGRect(x: margin, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button1.text = "1"
+        button1.textAlignment = .center
+        button1.isUserInteractionEnabled = true
+        button1.textColor = .white
+        button1.addGestureRecognizer(gestureRecognizer)
+        
+        button2 = UILabel(frame: CGRect(x: margin+buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button2.text = "2"
+        button2.textAlignment = .center
+        button2.isUserInteractionEnabled = true
+        button2.textColor = .white
+        button2.addGestureRecognizer(gestureRecognizer2)
+        
+        
+        button3 = UILabel(frame: CGRect(x: margin+2*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button3.text = "3"
+        button3.textAlignment = .center
+        button3.isUserInteractionEnabled = true
+        button3.textColor = .white
+        button3.addGestureRecognizer(gestureRecognizer3)
+        
+        button4 = UILabel(frame: CGRect(x: margin+3*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button4.text = "4"
+        button4.textAlignment = .center
+        button4.isUserInteractionEnabled = true
+        button4.textColor = .white
+        button4.addGestureRecognizer(gestureRecognizer4)
+        
+        button5 = UILabel(frame: CGRect(x: margin+4*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button5.text = "5"
+        button5.textAlignment = .center
+        button5.isUserInteractionEnabled = true
+        button5.textColor = .white
+        button5.addGestureRecognizer(gestureRecognizer5)
+        
+        button6 = UILabel(frame: CGRect(x: margin+5*buttonWidth, y: buttonRow, width: buttonWidth, height: 20))
+        let gestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(selectLabel))
+        button6.text = "6"
+        button6.textAlignment = .center
+        button6.isUserInteractionEnabled = true
+        button6.textColor = .white
+        button6.addGestureRecognizer(gestureRecognizer6)
+        
+        labels = [button1, button2, button3, button4, button5, button6]
+        
+        
+        button1.textColor = .purple //  Initialize as 1 hashtag to generate
+        
+        view.addSubview(button1)
+        view.addSubview(button2)
+        view.addSubview(button3)
+        view.addSubview(button4)
+        view.addSubview(button5)
+        view.addSubview(button6)
+        
+        
+        
+        //  Images
+        
+        
+        image1 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: imageRow1), size: standardSize))
+        let imageGestureRecognizer1 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img1", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image1.image = image
+        }
+        image1.layer.borderColor = UIColor.white.cgColor
+        image1.layer.borderWidth = 3*(view.frame.width/417)
+        image1.isUserInteractionEnabled = true
+        image1.contentMode = .scaleAspectFill
+        image1.clipsToBounds = true
+        image1.addGestureRecognizer(imageGestureRecognizer1)
+        
+        
+        image2 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: imageRow1), size: standardSize))
+        let imageGestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img2", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image2.image = image
+        }
+        image2.layer.borderColor = UIColor.white.cgColor
+        image2.layer.borderWidth = 3*(view.frame.width/417)
+        image2.isUserInteractionEnabled = true
+        image2.contentMode = .scaleAspectFill
+        image2.clipsToBounds = true
+        image2.addGestureRecognizer(imageGestureRecognizer2)
+        
+        
+        image3 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-2*margin, y: imageRow1), size: standardSize))
+        let imageGestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img3", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image3.image = image
+        }
+        image3.layer.borderColor = UIColor.white.cgColor
+        image3.layer.borderWidth = 3*(view.frame.width/417)
+        image3.isUserInteractionEnabled = true
+        image3.contentMode = .scaleAspectFill
+        image3.clipsToBounds = true
+        image3.addGestureRecognizer(imageGestureRecognizer3)
+
+        
+        image4 = UIImageView(frame: CGRect(origin: CGPoint(x: margin, y: imageRow2), size: standardSize))
+        let imageGestureRecognizer4 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img4", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image4.image = image
+        }
+        image4.layer.borderColor = UIColor.white.cgColor
+        image4.layer.borderWidth = 3*(view.frame.width/417)
+        image4.isUserInteractionEnabled = true
+        image4.contentMode = .scaleAspectFill
+        image4.clipsToBounds = true
+        image4.addGestureRecognizer(imageGestureRecognizer4)
+        
+        
+        image5 = UIImageView(frame: CGRect(origin: CGPoint(x: (view.frame.width/2)-margin, y: imageRow2), size: standardSize))
+        let imageGestureRecognizer5 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img5", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image5.image = image
+        }
+        image5.layer.borderColor = UIColor.white.cgColor
+        image5.layer.borderWidth = 3*(view.frame.width/417)
+        image5.isUserInteractionEnabled = true
+        image5.contentMode = .scaleAspectFill
+        image5.clipsToBounds = true
+        image5.addGestureRecognizer(imageGestureRecognizer5)
+        
+        
+        image6 = UIImageView(frame: CGRect(origin: CGPoint(x: view.frame.width-(view.frame.width/417)*50-margin*2, y: imageRow2), size: standardSize))
+        let imageGestureRecognizer6 = UITapGestureRecognizer(target: self, action: #selector(callMLModel))
+        if let sample = Bundle.main.path(forResource: "img6", ofType: "jpg") {
+            let image = UIImage(contentsOfFile: sample)
+            image6.image = image
+        }
+        image6.layer.borderColor = UIColor.white.cgColor
+        image6.layer.borderWidth = 3*(view.frame.width/417)
+        image6.isUserInteractionEnabled = true
+        image6.contentMode = .scaleAspectFill
+        image6.clipsToBounds = true
+        image6.addGestureRecognizer(imageGestureRecognizer6)
+        
+        
+        view.addSubview(image1)
+        view.addSubview(image2)
+        view.addSubview(image3)
+        view.addSubview(image4)
+        view.addSubview(image5)
+        view.addSubview(image6)
+        images = [image1, image2, image3, image4, image5, image6]
+        
+        
+        
+        //  Results of machine learning assisted hashtag generation
+        
+        resultsLabel = UILabel(frame: CGRect(x: margin/2, y: 9.1*margin, width: view.frame.width-margin, height: 50))
+        let copyRecognizer = UITapGestureRecognizer(target: self, action: #selector(copyIt))
+        resultsLabel.font = UIFont(name: "Helvetica", size: 20)
+        resultsLabel.textAlignment = .center
+        resultsLabel.lineBreakMode = .byWordWrapping
+        resultsLabel.numberOfLines = 0
+        resultsLabel.isUserInteractionEnabled = true
+        resultsLabel.textColor = .white
+        resultsLabel.alpha = 0
+        resultsLabel.addGestureRecognizer(copyRecognizer)
+        
+        view.addSubview(resultsLabel)
+        
+        
+        copiedLabel = UILabel(frame: CGRect(x: (view.bounds.width/2)-50, y: margin*10.2, width: 100, height: 20))
+        let copyRecognizerLabel = UITapGestureRecognizer(target: self, action: #selector(copyIt))
+        copiedLabel.font = UIFont(name: "Helvetica", size: 14)
+        copiedLabel.textAlignment = .center
+        copiedLabel.text = "Tap to copy!"
+        copiedLabel.addGestureRecognizer(copyRecognizerLabel)
+        copiedLabel.isUserInteractionEnabled = true
+        copiedLabel.textColor = .white
+        copiedLabel.alpha = 0
+        
+        view.addSubview(copiedLabel)
     }
     
     @objc internal func copyIt(_ sender : UITapGestureRecognizer) {
+        UIPasteboard.general.string = resultsLabel.text
         if !copied {
-            UIPasteboard.general.string = resultsLabel.text
             copiedLabel.fadeOutInColor(textGiven: "Copied!", colorChange: UIColor.purple)
             copied = true
         }
     }
     
-    func switching (label : UILabel) {
+    /**
+        Changes the label selected by the user to have purple text and undergo a circular pulse animation.
+        - parameters:
+            - sender: the gesture recognizer that called the function as UITapGestureRecognizer
+     */
+    
+    @objc internal func selectLabel(_ sender : UITapGestureRecognizer) {
+        
+        let labelToChange = sender.view as! UILabel
+        
         for u in labels {
-            if u == label {
-                let pulse = pulseAnimation(numberOfPulses: 1, radius: 50, position: label.center)
-                pulse.animationDuration = 0.8
+            if u == labelToChange {
+                let pulse = pulseAnimation(numberOfPulses: 1, radius: 50, position: labelToChange.center, duration: 0.8)
                 
-                view.layer.insertSublayer(pulse, below: label.layer)
-//                u.textColor = .purple
+                view.layer.insertSublayer(pulse, below: labelToChange.layer)
                 
                 UIView.transition(with: u, duration: 0.25, options: .transitionCrossDissolve, animations: { u.textColor = .purple }, completion: nil)
                 
@@ -430,19 +442,17 @@ class viewController : UIViewController {
         }
     }
     
-    @objc internal func selectLabel(_ sender : UITapGestureRecognizer) {
-        
-        let labelToChange = sender.view as! UILabel
-        switching(label: labelToChange)
-        
-    }
+    /**
+        Calls the machine learning model used for the program: in this case, GoogLeNetPlaces. Based on the results and the number of hashtags requested, the resultsLabel undergoes animations and is changed to fulfill these requirements
+        - parameters:
+            - sender: the gesture recognizer that called the function as UITapGestureRecognizer
+     */
     
     @objc internal func callMLModel(_ sender : UITapGestureRecognizer) {
         
         let imageView = sender.view as! UIImageView
         
-        let pulse = pulseAnimation(numberOfPulses: 1, radius: 110, position: imageView.center)
-        pulse.animationDuration = 0.8
+        let pulse = pulseAnimation(numberOfPulses: 1, radius: 110, position: imageView.center, duration: 0.8)
         
         view.layer.insertSublayer(pulse, below: imageView.layer)
         
@@ -483,73 +493,77 @@ class viewController : UIViewController {
                     for u : Character in removal {
                         if u == "/" {
                             if !(allScenes.contains(processingString)) {
-                                allScenes.append(hashtagCreator(stringToCreate: processingString))
+                                allScenes.append("#" + processingString)
                             }
                             processingString = ""
                         } else {
                             processingString += String(u)
                         }
                     }
-                    allScenes.append(hashtagCreator(stringToCreate: processingString))
+                    
+                    allScenes.append("#" + processingString)
                     processingString = ""
                     sceneLabels.removeValue(forKey: removal)
                     
                 }
+                
                 for i in 0...numberOfHashtags-1 {
                     finalHashtags += allScenes[i] + " "
                 }
             }
         }
         
-        
-        
         if resultsLabel.text != finalHashtags {
             copiedLabel.fadeOutInColor(textGiven: "Tap to copy!", colorChange: UIColor.white)
             resultsLabel.fadeOutIn(textGiven: finalHashtags)
             
-            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300))
-            pulse2.animationDuration = 1.2
-            
+            let pulse2 = pulseAnimation(numberOfPulses: 1, radius: 500, position: CGPoint(x: view.bounds.width/2, y: view.bounds.height+300), duration: 0.8)
             
             view.layer.insertSublayer(pulse2, above: resultsLabel.layer)
             
             copied = false
         }
-        
-        
-        
     }
     
-    func hashtagCreator (stringToCreate : String) -> String {
-        return "#" + stringToCreate
-    }
-    
+    /**
+        Uses the machine learning model on the image specified,
+        - parameters:
+            - image: the image required for analysis by the model as UIImage
+        - returns: the scenes and the probability of each scene as Dictionary<String, Double>?
+     */
+
     func scenes (image : UIImage) -> Dictionary<String, Double>? {
         let resizedImage = image.resize()
         
-        if let bufferedImage = imageProcessor.pixelBuffer(forImage: resizedImage.cgImage!) {
+        if let bufferedImage = imageProcessor.pixelBuffer(image: resizedImage.cgImage!) {
             guard let scene = try? model.prediction(sceneImage: bufferedImage) else {fatalError("Unexpected Runtime Error")}
             
             return scene.sceneLabelProbs
         }
         
         return nil
-        
     }
+    
+    /**
+        Finds the most probable scene
+        - parameters:
+            - scenery: a dictionary containing each scene and its respective probability as Dictionary<String, Double>
+        - returns: the scene with the highest probability as String
+     */
     
     func maximum (scenery: Dictionary<String, Double>) -> String {
         var probability = 0.0;
         var returnvalue = ""
+        
         for u in scenery {
             if u.value > probability {
                 probability = u.value
                 returnvalue = u.key
             }
         }
+        
         return returnvalue
     }
-    
-    
 }
 
 let vc = viewController()
